@@ -2,6 +2,7 @@ import * as express from 'express';
 import 'dotenv/config';
 import * as fileUpload from 'express-fileupload';
 import { createConnection } from 'typeorm';
+import viewsRouter from './routes/viewsRouter';
 import morgan = require('morgan');
 import bodyParser = require('body-parser');
 import helmet = require('helmet');
@@ -13,15 +14,17 @@ export const appPromise = (async (): Promise<express.Application> => {
 
   await createConnection();
 
-  app.use(helmet());
-  app.use(cors());
+  // app.use(helmet());
+  // app.use(cors());
   app.use(bodyParser.json({
     inflate: true,
   }));
   app.use(fileUpload());
   app.use(morgan('combined'));
+  app.set('views', 'src/public/views');
+  app.set('view engine', 'ejs');
 
-
+  app.use('', viewsRouter);
   app.use('/auth', authRouter);
 
   app.use((req: express.Request, res: express.Response, next:express.NextFunction) => {

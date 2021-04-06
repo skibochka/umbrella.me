@@ -2,8 +2,8 @@ import { Unauthorized } from 'http-errors';
 import * as express from 'express';
 import * as jwt from 'jsonwebtoken';
 import * as Redis from 'ioredis';
-import jwtConfig from '../../../umbrella.me/src/config/jwt';
-import { redisConfiguration } from '../../../umbrella.me/src/config/redis';
+import jwtConfig from '../config/jwt';
+import { redisConfiguration } from '../config/redis';
 
 export async function authMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
   const token = req.headers.authorization.split(' ')[1];

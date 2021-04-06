@@ -32,7 +32,12 @@ async function signIn(req: express.Request, res: express.Response) {
     throw new Unauthorized('Wrong password!');
   }
 
-  const access = jwt.sign({ id: user.id, phoneNumber: user.phoneNumber, role: user.role }, jwtConfig.secret, jwtConfig.accessExpirationTime);
+  const access = jwt.sign({
+    id: user.id,
+    phoneNumber: user.phoneNumber,
+    role: user.role,
+    name: user.name,
+  }, jwtConfig.secret, jwtConfig.accessExpirationTime);
   const refresh = jwt.sign({ id: user.id, phoneNumber: user.phoneNumber }, jwtConfig.secret, jwtConfig.refreshExpirationTime);
 
   return res.json({
