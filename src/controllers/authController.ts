@@ -4,6 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import * as Redis from 'ioredis';
 import * as fs from 'fs';
 import { Conflict, NotFound, Unauthorized } from 'http-errors';
+import * as uniqueId from 'uniqid';
 import jwtConfig from '../config/jwt';
 import { model } from '../helpers/db/repository';
 import { User } from '../models/User';
@@ -11,13 +12,16 @@ import { redisConfiguration } from '../config/redis';
 
 async function signUp(req: express.Request, res: express.Response) {
   req.body.password = await bcrypt.hash(req.body.password, 10);
+  const fileName = uniqueId();
 
-  fs.writeFileSync(`src/public/photos/${req.files.avatar.name}`, req.files.avatar.data);
-  req.body.photo = `src/public/photos/${req.files.avatar.name}`;
+  fs.writeFileSync(`src/public/photos/${fileName}`, req.files.avatar.data);
+  req.body.photo = `src/public/photos/${fileName}`;
 
   const user: User = await model(User).save(req.body);
   return res.json({
-    user,
+    id: user.id,
+    name: user.name,
+    phoneNumber: user.phoneNumber,
   });
 }
 
