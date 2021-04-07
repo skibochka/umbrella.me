@@ -5,7 +5,7 @@ import * as Redis from 'ioredis';
 import jwtConfig from '../config/jwt';
 import { redisConfiguration } from '../config/redis';
 
-export async function authMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+export async function httpAuthMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
   const token = req.headers.authorization.split(' ')[1];
   if (!token) {
     throw new Unauthorized('Please login');
@@ -22,7 +22,9 @@ export async function authMiddleware(req: express.Request, res: express.Response
 
   req.user = {
     id: userPayload.id,
-    isAdmin: userPayload.isAdmin,
+    name: userPayload.name,
+    phoneNumber: userPayload.phoneNumber,
+    role: userPayload.role,
   };
 
   return next();

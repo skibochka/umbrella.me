@@ -3,6 +3,7 @@ import 'dotenv/config';
 import * as fileUpload from 'express-fileupload';
 import { createConnection } from 'typeorm';
 import viewsRouter from './routes/viewsRouter';
+import clientRouter from "./routes/clientRouter";
 import morgan = require('morgan');
 import bodyParser = require('body-parser');
 import helmet = require('helmet');
@@ -26,6 +27,8 @@ export const appPromise = (async (): Promise<express.Application> => {
 
   app.use('', viewsRouter);
   app.use('/auth', authRouter);
+  app.use('', clientRouter);
+
 
   app.use((req: express.Request, res: express.Response, next:express.NextFunction) => {
     return res.status(404).send({

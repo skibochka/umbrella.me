@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as eah from 'express-async-handler';
-import { authMiddleware } from '../middlewares/authMiddleware';
+import { httpAuthMiddleware } from '../middlewares/httpAuthMiddleware';
 
 const viewsRouter = express.Router();
 
@@ -12,7 +12,7 @@ viewsRouter.get('/sign-in', eah((req:express.Request, res: express.Response) => 
   res.render('sign-in');
 }));
 
-// viewsRouter.use(eah(authMiddleware));
+// viewsRouter.use(eah(httpAuthMiddleware));
 
 viewsRouter.get('/', eah((req:express.Request, res: express.Response) => {
   res.render('index');
