@@ -6,19 +6,11 @@ import { SeekerRequest } from '../models/SeekerRequest';
 import { emitToUser } from '../socket/socketServer';
 import { redisConfiguration } from '../config/redis';
 
-async function statusActivate(req: express.Request, res: express.Response) {
-  await model(User).update(req.user.id, { status: true });
+async function changeStatus(req: express.Request, res: express.Response) {
+  await model(User).update(req.user.id, req.body);
 
   return res.status(200).json({
-    status: true,
-  });
-}
-
-async function statusInactivate(req: express.Request, res: express.Response) {
-  await model(User).update(req.user.id, { status: false });
-
-  return res.status(200).json({
-    status: false,
+    status: req.body.status,
   });
 }
 
@@ -47,8 +39,7 @@ async function sendRequest(req: express.Request, res: express.Response) {
   });
 }
 export {
-  statusActivate,
-  statusInactivate,
+  changeStatus,
   changeRole,
   sendRequest,
 };

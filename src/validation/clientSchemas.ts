@@ -9,6 +9,13 @@ const umbrellaRequest = {
     .required(),
 };
 
+const changeStatus = {
+  status: Joi
+    .boolean()
+    .required(),
+};
+
 export const clientValidation = {
   umbrellaRequest,
+  changeStatus,
 };
