@@ -26,9 +26,6 @@ export class User {
     status: boolean;
 
     @Column({ nullable: true })
-    intention: string;
-
-    @Column({ nullable: true })
     location: string;
 
     @CreateDateColumn()

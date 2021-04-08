@@ -2,13 +2,13 @@ import * as express from 'express';
 import 'dotenv/config';
 import * as fileUpload from 'express-fileupload';
 import { createConnection } from 'typeorm';
-import viewsRouter from './routes/viewsRouter';
-import clientRouter from "./routes/clientRouter";
+import clientRouter from './routes/clientRouter';
+import authRouter from './routes/authRouter';
 import morgan = require('morgan');
 import bodyParser = require('body-parser');
 import helmet = require('helmet');
 import cors = require('cors');
-import authRouter from './routes/authRouter';
+import viewsRouter from './routes/viewsRouter';
 
 export const appPromise = (async (): Promise<express.Application> => {
   const app = express();
@@ -35,7 +35,7 @@ export const appPromise = (async (): Promise<express.Application> => {
       message: `Route ${req.url} not found`,
     });
   });
-  // app.use((err: express.ErrorRequestHandler, req: express.Request, res: express.Response, next:express.NextFunction) => {
+  // app.use((err: express.ErrorRequestHandler, req: express.SeekerRequest, res: express.Response, next:express.NextFunction) => {
   //   return res.status(500).send({ error: err });
   // });
 
