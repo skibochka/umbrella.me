@@ -6,6 +6,7 @@ const umbrellaRequest = {
     .required(),
   intention: Joi
     .string()
+    .valid('lend', 'escort')
     .required(),
 };
 

@@ -12,10 +12,10 @@ import { redisConfiguration } from '../config/redis';
 
 async function signUp(req: express.Request, res: express.Response) {
   req.body.password = await bcrypt.hash(req.body.password, 10);
-  const fileName = uniqueId();
+  const fileNameId = uniqueId();
 
-  fs.writeFileSync(`src/public/photos/${fileName}`, req.files.avatar.data);
-  req.body.photo = `src/public/photos/${fileName}`;
+  fs.writeFileSync(`src/public/photos/${fileNameId}-${req.files.avatar.name}`, req.files.avatar.data);
+  req.body.photo = `src/public/photos/${fileNameId}-${req.files.avatar.name}`;
 
   const user: User = await model(User).save(req.body);
   return res.json({
