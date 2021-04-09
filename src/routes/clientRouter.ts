@@ -5,7 +5,7 @@ import {
   changeStatus,
   changeRole,
   sendRequest,
-  acceptEscortRequest,
+  acceptRequest,
 } from '../controllers/httpClientController';
 import { validatorMiddleware } from '../middlewares/validatorMiddleware';
 import { clientValidation } from '../validation/clientSchemas';
@@ -21,6 +21,6 @@ clientRouter.patch('/role/change', validatorMiddleware(clientValidation.changeRo
 
 clientRouter.post('/request/send', validatorMiddleware(clientValidation.umbrellaRequest), eah(umbrellaRequestMiddleware), eah(sendRequest));
 
-clientRouter.patch('/request/accept', validatorMiddleware(clientValidation.acceptRequest), eah(acceptEscortRequest));
+clientRouter.patch('/request/accept', validatorMiddleware(clientValidation.acceptRequest), eah(acceptRequest));
 
 export default clientRouter;

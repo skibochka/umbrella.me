@@ -40,8 +40,11 @@ async function sendRequest(req: express.Request, res: express.Response) {
   });
 }
 
-async function acceptEscortRequest(req: express.Request, res: express.Response) {
+async function acceptRequest(req: express.Request, res: express.Response) {
   const request = await model(SeekerRequest).findOne({ where: { id: req.body.requestId } });
+  if (request.acceptedAt) {
+    throw new BadRequest('Request is already accepted');
+  }
   if (req.user.id !== request.volunteerId) {
     throw new BadRequest('You can`t accept other user`s requests');
   }
@@ -51,6 +54,19 @@ async function acceptEscortRequest(req: express.Request, res: express.Response) 
   const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
   const seekerSocket = await redis.get(request.seekerId);
 
+  if (request.intention === 'lend') {
+    const seeker = await model(User).findOne({ where: { id: request.seekerId } });
+    await emitToUser(seekerSocket, 'request.accepted', {
+      requestId: request.id,
+      volunteerNumber: req.user.phoneNumber,
+    });
+
+    return res.status(200).json({
+      msg: 'Request accepted',
+      seekerPhoneNumber: seeker.phoneNumber,
+    });
+  }
+
   await emitToUser(seekerSocket, 'request.accepted', request.id);
 
   return res.status(200).json({
@@ -58,9 +74,10 @@ async function acceptEscortRequest(req: express.Request, res: express.Response) 
   });
 }
 
+
 export {
   changeStatus,
   changeRole,
   sendRequest,
-  acceptEscortRequest,
+  acceptRequest,
 };
