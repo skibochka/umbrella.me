@@ -15,7 +15,15 @@ const changeStatus = {
     .required(),
 };
 
+const changeRole = {
+  role: Joi
+    .string()
+    .valid('volunteer', 'seeker', 'stationaryVolunteer')
+    .required(),
+};
+
 export const clientValidation = {
   umbrellaRequest,
   changeStatus,
+  changeRole,
 };

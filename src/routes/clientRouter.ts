@@ -12,7 +12,7 @@ clientRouter.use(eah(httpAuthMiddleware));
 
 clientRouter.patch('/status/change', validatorMiddleware(clientValidation.changeStatus), eah(changeStatus));
 
-clientRouter.patch('/role/change', eah(changeRole));
+clientRouter.patch('/role/change', validatorMiddleware(clientValidation.changeRole), eah(changeRole));
 
 clientRouter.post('/umbrella/request', validatorMiddleware(clientValidation.umbrellaRequest), eah(umbrellaRequestMiddleware), eah(sendRequest));
 
