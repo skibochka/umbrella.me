@@ -30,10 +30,7 @@ async function sendRequest(req: express.Request, res: express.Response) {
     intention: req.body.intention,
   });
 
-  const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
-  const volunteerSocket = await redis.get(req.body.volunteerId);
-
-  await emitToUser(volunteerSocket, 'request.new', request.id);
+  await emitToUser(req.body.volunteerId, 'request.new', request.id);
 
   return res.status(200).json({
     request,
@@ -54,12 +51,9 @@ async function acceptRequest(req: express.Request, res: express.Response) {
 
   await model(SeekerRequest).update({ id: request.id }, { acceptedAt: new Date().getTime() });
 
-  const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
-  const seekerSocket = await redis.get(request.seekerId);
-
   if (request.intention === 'lend') {
     const seeker = await model(User).findOne({ where: { id: request.seekerId } });
-    await emitToUser(seekerSocket, 'request.accepted', {
+    await emitToUser(request.seekerId, 'request.accepted', {
       requestId: request.id,
       volunteerNumber: req.user.phoneNumber,
     });
@@ -70,7 +64,7 @@ async function acceptRequest(req: express.Request, res: express.Response) {
     });
   }
 
-  await emitToUser(seekerSocket, 'request.accepted', request.id);
+  await emitToUser(request.seekerId, 'request.accepted', request.id);
 
   return res.status(200).json({
     msg: 'Request accepted',
@@ -92,10 +86,7 @@ async function finishRequest(req: express.Request, res: express.Response) {
 
   await model(SeekerRequest).delete({ id: req.body.requestId });
 
-  const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
-  const seekerSocket = await redis.get(request.seekerId);
-
-  await emitToUser(seekerSocket, 'request.finish', {
+  await emitToUser(request.seekerId, 'request.finish', {
     requestId: request.id,
   });
 
