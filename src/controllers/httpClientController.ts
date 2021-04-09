@@ -42,11 +42,14 @@ async function sendRequest(req: express.Request, res: express.Response) {
 
 async function acceptRequest(req: express.Request, res: express.Response) {
   const request = await model(SeekerRequest).findOne({ where: { id: req.body.requestId } });
-  if (request.acceptedAt) {
-    throw new BadRequest('Request is already accepted');
+  if (!request) {
+    throw new BadRequest('Such request does not exist');
   }
   if (req.user.id !== request.volunteerId) {
     throw new BadRequest('You can`t accept other user`s requests');
+  }
+  if (request.acceptedAt) {
+    throw new BadRequest('Request is already accepted');
   }
 
   await model(SeekerRequest).update({ id: request.id }, { acceptedAt: new Date().getTime() });
@@ -74,10 +77,38 @@ async function acceptRequest(req: express.Request, res: express.Response) {
   });
 }
 
+async function finishRequest(req: express.Request, res: express.Response) {
+  const request = await model(SeekerRequest).findOne({ where: { id: req.body.requestId } });
+
+  if (!request) {
+    throw new BadRequest('Such request does not exist');
+  }
+  if (req.user.id !== request.volunteerId) {
+    throw new BadRequest('You can`t finish other user`s requests');
+  }
+  if (!request.acceptedAt) {
+    throw new BadRequest('Request was not accepted');
+  }
+
+  await model(SeekerRequest).delete({ id: req.body.requestId });
+
+  const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
+  const seekerSocket = await redis.get(request.seekerId);
+
+  await emitToUser(seekerSocket, 'request.finish', {
+    requestId: request.id,
+  });
+
+  return res.status(200).json({
+    msq: 'Request successful finished',
+    requestId: request.id,
+  });
+}
 
 export {
   changeStatus,
   changeRole,
   sendRequest,
   acceptRequest,
+  finishRequest,
 };

@@ -23,7 +23,7 @@ const changeRole = {
     .required(),
 };
 
-const acceptRequest = {
+const checkRequestId = {
   requestId: Joi
     .number()
     .required(),
@@ -33,5 +33,5 @@ export const clientValidation = {
   umbrellaRequest,
   changeStatus,
   changeRole,
-  acceptRequest,
+  checkRequestId,
 };
