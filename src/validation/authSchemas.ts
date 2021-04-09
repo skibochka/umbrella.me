@@ -14,6 +14,7 @@ const signUp = {
     .required(),
   role: Joi
     .string()
+    .valid('volunteer', 'seeker', 'stationaryVolunteer')
     .required(),
 };
 
