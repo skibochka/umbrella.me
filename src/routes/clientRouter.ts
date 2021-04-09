@@ -1,7 +1,12 @@
 import * as express from 'express';
 import * as eah from 'express-async-handler';
 import { httpAuthMiddleware } from '../middlewares/httpAuthMiddleware';
-import { changeStatus, changeRole, sendRequest } from '../controllers/httpClientController';
+import {
+  changeStatus,
+  changeRole,
+  sendRequest,
+  acceptEscortRequest,
+} from '../controllers/httpClientController';
 import { validatorMiddleware } from '../middlewares/validatorMiddleware';
 import { clientValidation } from '../validation/clientSchemas';
 import { umbrellaRequestMiddleware } from '../middlewares/umbrellaRequestMiddleware';
@@ -14,6 +19,8 @@ clientRouter.patch('/status/change', validatorMiddleware(clientValidation.change
 
 clientRouter.patch('/role/change', validatorMiddleware(clientValidation.changeRole), eah(changeRole));
 
-clientRouter.post('/umbrella/request', validatorMiddleware(clientValidation.umbrellaRequest), eah(umbrellaRequestMiddleware), eah(sendRequest));
+clientRouter.post('/request/send', validatorMiddleware(clientValidation.umbrellaRequest), eah(umbrellaRequestMiddleware), eah(sendRequest));
+
+clientRouter.patch('/request/accept', validatorMiddleware(clientValidation.acceptRequest), eah(acceptEscortRequest));
 
 export default clientRouter;

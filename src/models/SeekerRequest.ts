@@ -15,4 +15,7 @@ export class SeekerRequest {
 
   @Column()
   intention: string;
+
+  @Column({ nullable: true })
+  acceptedAt: number;
 }

@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as Redis from 'ioredis';
+import { BadRequest } from 'http-errors';
 import { User } from '../models/User';
 import { model } from '../helpers/db/repository';
 import { SeekerRequest } from '../models/SeekerRequest';
@@ -38,8 +39,28 @@ async function sendRequest(req: express.Request, res: express.Response) {
     request,
   });
 }
+
+async function acceptEscortRequest(req: express.Request, res: express.Response) {
+  const request = await model(SeekerRequest).findOne({ where: { id: req.body.requestId } });
+  if (req.user.id !== request.volunteerId) {
+    throw new BadRequest('You can`t accept other user`s requests');
+  }
+
+  await model(SeekerRequest).update({ id: request.id }, { acceptedAt: new Date().getTime() });
+
+  const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
+  const seekerSocket = await redis.get(request.seekerId);
+
+  await emitToUser(seekerSocket, 'request.accepted', request.id);
+
+  return res.status(200).json({
+    msg: 'Request accepted',
+  });
+}
+
 export {
   changeStatus,
   changeRole,
   sendRequest,
+  acceptEscortRequest,
 };
