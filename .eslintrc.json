@@ -34,6 +34,8 @@
         "class-methods-use-this": "off",
         "no-underscore-dangle": "off",
         "import/prefer-default-export": "off",
-        "max-classes-per-file": "off"
+        "max-classes-per-file": "off",
+        "import/order": "off",
+        "import/first": "off"
     }
 }

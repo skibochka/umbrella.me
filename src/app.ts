@@ -26,9 +26,9 @@ export const appPromise = (async (): Promise<express.Application> => {
   app.set('views', 'src/public/views');
   app.set('view engine', 'ejs');
 
-  app.use('', viewsRouter);
+  app.use('/', viewsRouter);
   app.use('/auth', authRouter);
-  app.use('', clientRouter);
+  app.use('/', clientRouter);
 
 
   app.use((req: express.Request, res: express.Response, next:express.NextFunction) => {
@@ -36,9 +36,10 @@ export const appPromise = (async (): Promise<express.Application> => {
       message: `Route ${req.url} not found`,
     });
   });
-  // app.use((err: express.ErrorRequestHandler, req: express.SeekerRequest, res: express.Response, next:express.NextFunction) => {
-  //   return res.status(500).send({ error: err });
-  // });
+
+  app.use((err: express.ErrorRequestHandler, req: express.Request, res: express.Response, next:express.NextFunction) => {
+    return res.status(500).send({ error: err });
+  });
 
   checkNotReturnedUmbrellas.start();
   deleteUnfinishedEscortRequests.start();
