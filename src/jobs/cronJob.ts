@@ -1,13 +1,13 @@
 import { CronJob } from 'cron';
 import * as dayjs from 'dayjs';
-import { scheduleConfig } from '../config/cron';
+import { cronConfig } from '../config/cron';
 import { model } from '../helpers/db/repository';
 import { SeekerRequest } from '../models/SeekerRequest';
 import { User } from '../models/User';
 import { frozenUser } from '../models/frozenUser';
 import { emitToUser } from '../socket/socketServer';
 
-const checkNotReturnedUmbrellas = new CronJob(scheduleConfig.checkNotReturnedUmbrellas, async () => {
+const checkNotReturnedUmbrellas = new CronJob(cronConfig.checkNotReturnedUmbrellas.cronTime, async () => {
   const requests = await model(SeekerRequest).find({ where: { intention: 'lend' } });
 
   const expiredRequests = requests.filter((request) => {
@@ -23,9 +23,9 @@ const checkNotReturnedUmbrellas = new CronJob(scheduleConfig.checkNotReturnedUmb
   usersToFreeze.map(async (request) => {
     await model(frozenUser).save({ id: request.seekerId });
   });
-}, null, true, 'America/Los_Angeles');
+}, null, true, cronConfig.seekerReminder.timezone);
 
-const deleteUnfinishedEscortRequests = new CronJob(scheduleConfig.deleteUnfinishedEscortRequests, async () => {
+const deleteUnfinishedEscortRequests = new CronJob(cronConfig.deleteUnfinishedEscortRequests.cronTime, async () => {
   const requests = await model(SeekerRequest).find({ where: { intention: 'escort' } });
 
   const expiredRequests = requests.filter((request) => {
@@ -35,15 +35,15 @@ const deleteUnfinishedEscortRequests = new CronJob(scheduleConfig.deleteUnfinish
   expiredRequests.map(async (request) => {
     await model(SeekerRequest).delete({ id: request.seekerId });
   });
-}, null, true, 'America/Los_Angeles');
+}, null, true, cronConfig.seekerReminder.timezone);
 
-const seekerReminder = new CronJob(scheduleConfig.seekerReminder, async () => {
+const seekerReminder = new CronJob(cronConfig.seekerReminder.cronTime, async () => {
   const requests = await model(SeekerRequest).find({ where: { intention: 'lend' } });
 
   requests.map(async (request) => {
     await emitToUser(request.seekerId, 'user.remind', 'Please don`t forget to return umbrella');
   });
-}, null, true, 'America/Los_Angeles');
+}, null, true, cronConfig.seekerReminder.timezone);
 
 export {
   checkNotReturnedUmbrellas,
