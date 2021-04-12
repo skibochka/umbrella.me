@@ -2,13 +2,14 @@ import * as express from 'express';
 import 'dotenv/config';
 import * as fileUpload from 'express-fileupload';
 import { createConnection } from 'typeorm';
+import morgan = require('morgan');
 import clientRouter from './routes/clientRouter';
 import authRouter from './routes/authRouter';
-import morgan = require('morgan');
+import { checkNotReturnedUmbrellas, deleteUnfinishedEscortRequests, seekerReminder } from './jobs/cronJob';
+import viewsRouter from './routes/viewsRouter';
 import bodyParser = require('body-parser');
 import helmet = require('helmet');
 import cors = require('cors');
-import viewsRouter from './routes/viewsRouter';
 
 export const appPromise = (async (): Promise<express.Application> => {
   const app = express();
@@ -38,6 +39,10 @@ export const appPromise = (async (): Promise<express.Application> => {
   // app.use((err: express.ErrorRequestHandler, req: express.SeekerRequest, res: express.Response, next:express.NextFunction) => {
   //   return res.status(500).send({ error: err });
   // });
+
+  checkNotReturnedUmbrellas.start();
+  deleteUnfinishedEscortRequests.start();
+  seekerReminder.start();
 
   return app;
 });

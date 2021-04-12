@@ -1,11 +1,10 @@
 import * as express from 'express';
-import * as Redis from 'ioredis';
 import { BadRequest } from 'http-errors';
+import * as dayjs from 'dayjs';
 import { User } from '../models/User';
 import { model } from '../helpers/db/repository';
 import { SeekerRequest } from '../models/SeekerRequest';
 import { emitToUser } from '../socket/socketServer';
-import { redisConfiguration } from '../config/redis';
 
 async function changeStatus(req: express.Request, res: express.Response) {
   await model(User).update(req.user.id, req.body);
@@ -49,7 +48,7 @@ async function acceptRequest(req: express.Request, res: express.Response) {
     throw new BadRequest('Request is already accepted');
   }
 
-  await model(SeekerRequest).update({ id: request.id }, { acceptedAt: new Date().getTime() });
+  await model(SeekerRequest).update({ id: request.id }, { acceptedAt: dayjs().add(7, 'days') });
 
   if (request.intention === 'lend') {
     const seeker = await model(User).findOne({ where: { id: request.seekerId } });

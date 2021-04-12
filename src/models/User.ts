@@ -25,6 +25,9 @@ export class User {
     @Column({ default: false })
     status: boolean;
 
+    @Column({ default: 0 })
+    strikes: number;
+
     @Column({ nullable: true })
     location: string;
 

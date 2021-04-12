@@ -1,7 +1,11 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  Unique,
 } from 'typeorm';
 
+@Unique(['volunteerId', 'seekerId', 'intention'])
 @Entity()
 export class SeekerRequest {
   @PrimaryGeneratedColumn()
@@ -17,5 +21,5 @@ export class SeekerRequest {
   intention: string;
 
   @Column({ nullable: true })
-  acceptedAt: number;
+  acceptedAt: Date;
 }

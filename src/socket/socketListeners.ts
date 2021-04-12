@@ -43,7 +43,7 @@ export class Client {
 
   private async getUsersLocation() {
     if (this.user.role === 'volunteer' && 'stationaryVolunteer') {
-      const seekerLocations = await model(User).find({ select: ['location'], where: { role: 'seeker' } });
+      const seekerLocations = await model(User).find({ select: ['location'], where: { role: 'seeker', status: true } });
 
       return this.socket.emit('users.get.locations', seekerLocations);
     }

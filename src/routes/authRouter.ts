@@ -4,11 +4,12 @@ import { authValidation } from '../validation/authSchemas';
 import { httpAuthMiddleware } from '../middlewares/httpAuthMiddleware';
 import { signUp, signIn, signOut } from '../controllers/authController';
 import { validatorMiddleware } from '../middlewares/validatorMiddleware';
+import { frozenUsersMiddleware } from '../middlewares/frozenUsersMiddleware';
 
 const authRouter = express.Router();
 
 
-authRouter.post('/sign-up', validatorMiddleware(authValidation.signUp), eah(signUp));
+authRouter.post('/sign-up', validatorMiddleware(authValidation.signUp), eah(frozenUsersMiddleware), eah(signUp));
 
 authRouter.post('/sign-in', validatorMiddleware(authValidation.signIn), eah(signIn));
 
