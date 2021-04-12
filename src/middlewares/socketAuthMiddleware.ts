@@ -1,7 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import * as Redis from 'ioredis';
-import { redisConfiguration } from '../config/redis';
 import jwtConfig from '../config/jwt';
+import redisConnection from '../redis/redisConnection';
 
 export async function socketAuthMiddleware(socket, next) {
   const { token } = socket.handshake.auth;
@@ -9,7 +9,7 @@ export async function socketAuthMiddleware(socket, next) {
     throw new Error('Please login');
   }
 
-  const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
+  const redis: Redis = redisConnection();
   const existInBlackList = await redis.get(token);
 
   if (existInBlackList) {

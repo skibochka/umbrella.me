@@ -1,12 +1,12 @@
 import { Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
-import * as Redis from 'ioredis';
 import { IUser } from '../interfaces/user.interface';
 import jwtConfig from '../config/jwt';
 import { model } from '../helpers/db/repository';
 import { User } from '../models/User';
 import { socketAuthMiddleware } from '../middlewares/socketAuthMiddleware';
 import { redisConfiguration } from '../config/redis';
+import redisConnection from '../redis/redisConnection';
 
 export class Client {
   constructor(socket: Socket, user :IUser) {
@@ -27,7 +27,7 @@ export class Client {
       const {
         phoneNumber, name, role, id,
       } = jwt.verify(socket.handshake.auth.token, jwtConfig.secret);
-      const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
+      const redis = redisConnection();
       await redis.set(id, socket.id, 'EX', redisConfiguration.accessExpirationTime);
       return new this(socket, {
         phoneNumber, name, role, id,

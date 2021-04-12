@@ -1,7 +1,6 @@
 import * as io from 'socket.io';
-import * as Redis from 'ioredis';
 import { Client } from './socketListeners';
-import { redisConfiguration } from '../config/redis';
+import redisConnection from '../redis/redisConnection';
 
 let ioServer = null;
 
@@ -16,7 +15,7 @@ export async function socketServer(serverInstance) {
 }
 
 export async function emitToUser(userId, event, value) {
-  const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
+  const redis = redisConnection();
   const userSocket = await redis.get(userId);
 
   ioServer.to(userSocket).emit(event, value);

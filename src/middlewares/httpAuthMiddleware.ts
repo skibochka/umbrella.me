@@ -1,9 +1,8 @@
 import { Unauthorized } from 'http-errors';
 import * as express from 'express';
 import * as jwt from 'jsonwebtoken';
-import * as Redis from 'ioredis';
 import jwtConfig from '../config/jwt';
-import { redisConfiguration } from '../config/redis';
+import redisConnection from '../redis/redisConnection';
 
 export async function httpAuthMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
   const token = req.headers.authorization.split(' ')[1];
@@ -11,7 +10,7 @@ export async function httpAuthMiddleware(req: express.Request, res: express.Resp
     throw new Unauthorized('Please login');
   }
 
-  const redis: Redis = new Redis(`redis://${redisConfiguration.redisUrl}:${redisConfiguration.redisPort}`);
+  const redis = redisConnection();
   const existInBlackList = await redis.get(token);
 
   if (existInBlackList) {
